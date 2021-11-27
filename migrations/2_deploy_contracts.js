@@ -1,5 +1,5 @@
-var SimpleStorage =  artifacts.require("./SimpleStorage.sol");
+var RequestPayment =  artifacts.require("./RequestPayment.sol");
 
 module.exports = function(deployer) {
-    deployer.deploy(SimpleStorage)
+    deployer.deploy(RequestPayment)
 };

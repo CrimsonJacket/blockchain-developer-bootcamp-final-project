@@ -13,4 +13,5 @@ A Request is defined with the following attributes/members:
 - amount: `uint`
 - receiver: `address`
 - payer: `address`
+- state: `RequestState`
 
