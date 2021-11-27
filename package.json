@@ -1,0 +1,21 @@
+{
+  "name": "blockchain-developer-bootcamp-final-project",
+  "version": "0.1.0",
+  "description": "Request Payments DApp",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CrimsonJacket/blockchain-developer-bootcamp-final-project.git"
+  },
+  "author": "Daniel Tan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CrimsonJacket/blockchain-developer-bootcamp-final-project/issues"
+  },
+  "homepage": "https://github.com/CrimsonJacket/blockchain-developer-bootcamp-final-project#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.4.0"
+  }
+}
