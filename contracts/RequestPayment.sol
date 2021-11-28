@@ -30,7 +30,6 @@ contract RequestPayment {
     mapping(address => uint256[]) public payerPayments;
 
     // Events
-
     event LogRequestCreated(address payer, address receiver, uint amount, uint256 requestId);
     event LogRequestCancelled(address receiver, uint256 requestId);
     event LogRequestApproved(address payer, address receiver, uint amount);
@@ -66,10 +65,14 @@ contract RequestPayment {
         _;
     }
 
+    /// @notice Fetches all the requests ever made.
+    /// @dev Fetches all the requests ever made.
     function getAllRequests() public view returns(Request[] memory) {
         return requests;
     }
 
+    /// @notice Fetches only the requests made by the sender
+    /// @dev This function iterates through all the requests made by the sender and returns a list of Request
     function getMyRequests() public view returns(Request[] memory) {
         uint[] storage myRequestIds = receiverRequests[msg.sender];
         Request[] memory myRequests = new Request[](myRequestIds.length);
@@ -79,6 +82,8 @@ contract RequestPayment {
         return myRequests;
     }
 
+    /// @notice Fetches only the requests made to the sender
+    /// @dev This function iterates through all the requests made to the sender and returns a list of Request
     function getMyPayments() public view returns(Request[] memory) {
         uint[] storage myPaymentIds = payerPayments[msg.sender];
         Request[] memory myPayments = new Request[](myPaymentIds.length);
@@ -88,6 +93,10 @@ contract RequestPayment {
         return myPayments;
     }
 
+    /// @notice Creates a request to the specified payer.
+    /// @dev Creates a new Request and stores it. Also does an simple check to determine that the payer is not the receiver.
+    /// @param payerAddr Address of the intended payer.
+    /// @param amount Amount to expect from the intended payer.
     function createRequest(address payerAddr, uint amount)
         public
         checkReceiverNotPayer(payerAddr)
@@ -116,6 +125,9 @@ contract RequestPayment {
         return newRequest.id;
     }
 
+    /// @notice Cancels a request made by the sender.
+    /// @dev Checks if the request specified belongs to the sender.
+    /// @param requestId The request ID that the sender intends to cancel.
     function cancelRequest(uint256 requestId)
         public
         checkRequestOwner(requestId)
@@ -126,6 +138,9 @@ contract RequestPayment {
         emit LogRequestCancelled(msg.sender, requestId);
     }
 
+    /// @notice Approves a payment request.
+    /// @dev Checks if the request payer is attached to the sender.
+    /// @param requestId The request ID associated with the request that the sender intends to approve.
     function approveRequest(uint256 requestId)
         public
         payable
@@ -139,6 +154,9 @@ contract RequestPayment {
         emit LogRequestApproved(msg.sender, request.receiver, request.amount);
     }
 
+    /// @notice Claims all the approved payments
+    /// @dev Retrieves all the requests made by the sender and unlocks the total amount of all the APPROVED requests.amount
+    ///      Transaction fails if there is no request approved.
     function claimApprovedRequest()
         public
     {
