@@ -17,6 +17,7 @@
   "homepage": "https://github.com/CrimsonJacket/blockchain-developer-bootcamp-final-project#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^4.4.0",
-    "@openzeppelin/contracts-upgradeable": "^4.3.3"
+    "@openzeppelin/contracts-upgradeable": "^4.3.3",
+    "@openzeppelin/test-helpers": "^0.5.15"
   }
 }

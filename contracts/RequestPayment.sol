@@ -79,6 +79,15 @@ contract RequestPayment {
         return myRequests;
     }
 
+    function getMyPayments() public view returns(Request[] memory) {
+        uint[] storage myPaymentIds = payerPayments[msg.sender];
+        Request[] memory myPayments = new Request[](myPaymentIds.length);
+        for (uint i = 0; i < myPaymentIds.length; i++) {
+            myPayments[i] = requests[myPaymentIds[i]];
+        }
+        return myPayments;
+    }
+
     function createRequest(address payerAddr, uint amount)
         public
         checkReceiverNotPayer(payerAddr)
@@ -124,7 +133,7 @@ contract RequestPayment {
     {
         uint amountPaid = msg.value;
         Request memory request = requests[requestId];
-        require(request.amount == amountPaid);
+        require(request.amount == amountPaid && request.state != RequestState.CANCELLED);
         request.state = RequestState.APPROVED;
         requests[requestId] = request;
         emit LogRequestApproved(msg.sender, request.receiver, request.amount);
