@@ -9,8 +9,11 @@ Request Payments on the blockchain. Final Project for the ConsenSys Academy 2021
   - [Use Cases](#use-cases)
   - [Directory Structure](#directory-structure)
   - [Installing Dependencies](#installing-dependencies)
-  - [Deploying Locally](#deploying-locally)
-  - [Running Test Cases](#running-test-cases)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installing](#installing)
+    - [Deploying the Smart Contract](#deploying-the-smart-contract)
+    - [Running Test Cases](#running-test-cases)
   - [Accessing via Netlify](#accessing-via-netlify)
   - [Additional Ideas to explore](#additional-ideas-to-explore)
 
@@ -56,11 +59,24 @@ $PROJECT_HOME
 
 ## Installing Dependencies
 
-## Deploying Locally
+## Getting Started
 
-## Running Test Cases
+### Prerequisites
 
+### Installing
+
+### Deploying the Smart Contract
+
+### Running Test Cases
+Simply run the following in your terminal of choice
+
+`$ truffle test`
 ## Accessing via Netlify
+
+RequestPayment Contract Address: `TBD`
+
+Deployed Application URL: `TBD`
+The web application accessible via the url above is connected to an instance of the `RequestPayment` Contract deployed on the `Kovan` testnet as such you will need to be on the `Kovan` testnet to interact with the DApp.
 
 ## Additional Ideas to explore
 - Make it possible for Payer to approve a partial payment.
