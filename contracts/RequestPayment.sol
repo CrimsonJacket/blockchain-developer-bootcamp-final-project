@@ -29,7 +29,9 @@ contract RequestPayment {
     mapping(address => uint256[]) public receiverRequests;
     mapping(address => uint256[]) public payerPayments;
 
-    // Events
+    /*
+     * Events
+     */
     event LogRequestCreated(address payer, address receiver, uint amount, uint256 requestId);
     event LogRequestCancelled(address receiver, uint256 requestId);
     event LogRequestApproved(address payer, address receiver, uint amount);
