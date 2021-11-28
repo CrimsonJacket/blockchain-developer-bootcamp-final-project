@@ -2,10 +2,15 @@
 pragma solidity ^0.8.3;
 pragma experimental ABIEncoderV2;
 
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+
 /// @title A contract to register request payments and to claim them if they are accepted.
 /// @author Daniel Tan
 /// @notice Not extensively tested. Use at your own risk.
-contract RequestPayment {
+contract RequestPayment is Initializable, UUPSUpgradeable, OwnableUpgradeable, PausableUpgradeable {
 
     enum RequestState {
         OPEN,
@@ -28,6 +33,20 @@ contract RequestPayment {
     mapping(uint256 => address) public requestIdToPayerAddr;
     mapping(address => uint256[]) public receiverRequests;
     mapping(address => uint256[]) public payerPayments;
+
+    /// @notice Function required by UUPSUpgradable contracts.
+    /// @dev This function replaces the constructor, that should not be implemented in UUPSUpgradable contracts
+    function initialize() initializer public {
+        __UUPSUpgradeable_init();
+        __Ownable_init();
+        __Pausable_init();
+    }
+
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        onlyOwner
+        override
+    {}
 
     /*
      * Events
@@ -101,6 +120,7 @@ contract RequestPayment {
     /// @param amount Amount to expect from the intended payer.
     function createRequest(address payerAddr, uint amount)
         public
+        whenNotPaused
         checkReceiverNotPayer(payerAddr)
         checkValidRequest(amount)
         returns (uint256)
@@ -132,6 +152,7 @@ contract RequestPayment {
     /// @param requestId The request ID that the sender intends to cancel.
     function cancelRequest(uint256 requestId)
         public
+        whenNotPaused
         checkRequestOwner(requestId)
     {
         Request memory request = requests[requestId];
@@ -146,6 +167,7 @@ contract RequestPayment {
     function approveRequest(uint256 requestId)
         public
         payable
+        whenNotPaused
         checkRequestPayer(requestId)
     {
         uint amountPaid = msg.value;
@@ -161,6 +183,7 @@ contract RequestPayment {
     ///      Transaction fails if there is no request approved.
     function claimApprovedRequest()
         public
+        whenNotPaused
     {
         uint[] storage myRequestIds = receiverRequests[msg.sender];
         uint amountToClaim;
