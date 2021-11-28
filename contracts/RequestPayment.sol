@@ -11,7 +11,7 @@ contract RequestPayment {
         OPEN,
         APPROVED,
         CANCELLED,
-        FILLED
+        CLAIMED
     }
 
     struct Request {
@@ -27,13 +27,14 @@ contract RequestPayment {
     mapping(uint256 => address) public requestIdToReceiverAddr;
     mapping(uint256 => address) public requestIdToPayerAddr;
     mapping(address => uint256[]) public receiverRequests;
-    mapping(address => uint256[]) public payerRequests;
+    mapping(address => uint256[]) public payerPayments;
 
     // Events
 
     event LogRequestCreated(address payer, address receiver, uint amount, uint256 requestId);
     event LogRequestCancelled(address receiver, uint256 requestId);
     event LogRequestApproved(address payer, address receiver, uint amount);
+    event LogRequestClaimed(address payer, address receiver, uint amount);
 
     /*
      * Modifiers
@@ -69,11 +70,20 @@ contract RequestPayment {
         return requests;
     }
 
+    function getMyRequests() public view returns(Request[] memory) {
+        uint[] storage myRequestIds = receiverRequests[msg.sender];
+        Request[] memory myRequests = new Request[](myRequestIds.length);
+        for (uint i = 0; i < myRequestIds.length; i++) {
+            myRequests[i] = requests[myRequestIds[i]];
+        }
+        return myRequests;
+    }
+
     function createRequest(address payerAddr, uint amount)
         public
-        payable
         checkReceiverNotPayer(payerAddr)
         checkValidRequest(amount)
+        returns (uint256)
     {
 
         Request memory newRequest = Request(
@@ -87,11 +97,14 @@ contract RequestPayment {
 
         requestIdToReceiverAddr[newRequest.id] = msg.sender;
         requestIdToPayerAddr[newRequest.id] = payerAddr;
+
         receiverRequests[msg.sender].push(newRequest.id);
-        payerRequests[payerAddr].push(newRequest.id);
+        payerPayments[payerAddr].push(newRequest.id);
 
         counter = counter + 1;
         emit LogRequestCreated(payerAddr, msg.sender, amount, counter);
+
+        return newRequest.id;
     }
 
     function cancelRequest(uint256 requestId)
@@ -100,6 +113,7 @@ contract RequestPayment {
     {
         Request memory request = requests[requestId];
         request.state = RequestState.CANCELLED;
+        requests[requestId] = request;
         emit LogRequestCancelled(msg.sender, requestId);
     }
 
@@ -108,13 +122,33 @@ contract RequestPayment {
         payable
         checkRequestPayer(requestId)
     {
-        Request storage request = requests[requestId];
+        uint amountPaid = msg.value;
+        Request memory request = requests[requestId];
+        require(request.amount == amountPaid);
+        request.state = RequestState.APPROVED;
+        requests[requestId] = request;
         emit LogRequestApproved(msg.sender, request.receiver, request.amount);
-
-        (bool sent, ) = msg.sender.call{value: request.amount}("");
-        require(sent, "Failed to send Ether");
-        if (sent) {
-            request.state = RequestState.FILLED;
-        }
     }
+
+    function claimApprovedRequest()
+        public
+    {
+        uint[] storage myRequestIds = receiverRequests[msg.sender];
+        uint amountToClaim;
+
+        for (uint i = 0; i < myRequestIds.length; i++) {
+            Request memory request = requests[myRequestIds[i]];
+            if (request.state == RequestState.APPROVED) {
+                amountToClaim = request.amount + amountToClaim;
+                request.state = RequestState.CLAIMED;
+                requests[myRequestIds[i]] = request;
+                emit LogRequestClaimed(request.payer, request.receiver, request.amount);
+            }
+        }
+
+        require(amountToClaim > 0, "You do not have any approved requests to claim.");
+        (bool sent, ) = msg.sender.call{value: amountToClaim}("");
+        require(sent, "Failed to send Ether");
+    }
+    
 }
