@@ -142,7 +142,7 @@ contract RequestPayment is Initializable, UUPSUpgradeable, OwnableUpgradeable, P
         payerPayments[payerAddr].push(newRequest.id);
 
         counter = counter + 1;
-        emit LogRequestCreated(payerAddr, msg.sender, amount, counter);
+        emit LogRequestCreated(payerAddr, msg.sender, amount, newRequest.id);
 
         return newRequest.id;
     }

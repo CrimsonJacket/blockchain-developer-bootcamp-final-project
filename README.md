@@ -81,3 +81,4 @@ The web application accessible via the url above is connected to an instance of 
 ## Additional Ideas to explore
 - Make it possible for Payer to approve a partial payment.
 - Explore ways for Payer to reject a payment.
+- Optimizing Gas by dynamically reducing the `Request[]` storage variable after every call of the _`claimApprovedRequest()`_ function.
