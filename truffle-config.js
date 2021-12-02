@@ -30,8 +30,9 @@ module.exports = {
     //  network_id: "*",       // Any network (default: none)
     // },
     local: {
-      host: "127.0.0.1",
+      host: "localhost",
       port: 8545,
+      chainId: 1337,
       network_id: "*"
     },
     kovan: {

@@ -4,7 +4,6 @@
   "description": "Request Payments DApp",
   "scripts": {
     "test": "truffle test",
-    "install": "yarn install && cd react-app && yarn install",
     "start": "cd react-app && yarn start"
   },
   "repository": {
@@ -22,6 +21,7 @@
     "@openzeppelin/contracts-upgradeable": "^4.3.3",
     "@openzeppelin/test-helpers": "^0.5.15",
     "@truffle/hdwallet-provider": "^1.7.0",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "webpack": "4.44.2"
   }
 }
